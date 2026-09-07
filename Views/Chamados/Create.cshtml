@@ -1,0 +1,51 @@
+@model Chamado
+@{
+    ViewData["Title"] = "Abrir chamado";
+}
+
+<h1 class="h3 mb-3">Abrir chamado</h1>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+
+            <div class="mb-3">
+                <label asp-for="Titulo" class="form-label"></label>
+                <input asp-for="Titulo" class="form-control" placeholder="Resuma o problema em uma frase" />
+                <span asp-validation-for="Titulo" class="text-danger small"></span>
+            </div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-6">
+                    <label asp-for="CategoriaId" class="form-label"></label>
+                    <select asp-for="CategoriaId" class="form-select" asp-items="ViewBag.Categorias as SelectList">
+                        <option value="">Selecione...</option>
+                    </select>
+                    <span asp-validation-for="CategoriaId" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Prioridade" class="form-label"></label>
+                    <select asp-for="Prioridade" class="form-select"
+                            asp-items="Html.GetEnumSelectList<Prioridade>()"></select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Descricao" class="form-label"></label>
+                <textarea asp-for="Descricao" class="form-control" rows="6"
+                          placeholder="Descreva o que acontece, desde quando, e o que já foi tentado."></textarea>
+                <span asp-validation-for="Descricao" class="text-danger small"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Abrir chamado</button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

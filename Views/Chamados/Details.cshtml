@@ -1,0 +1,161 @@
+@model Chamado
+@using System.Security.Claims
+@{
+    ViewData["Title"] = $"Chamado #{Model.Id}";
+    var perfil = User.FindFirstValue(ClaimTypes.Role) ?? "";
+    var ehEquipe = perfil == "Admin" || perfil == "Tecnico";
+    var ehAdmin = perfil == "Admin";
+}
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <div class="text-muted small">Chamado #@Model.Id</div>
+        <h1 class="h3 mb-2">@Model.Titulo</h1>
+        <span class="badge bg-@UiHelper.CorStatus(Model.Status)">@Model.Status.Texto()</span>
+        <span class="badge bg-@UiHelper.CorPrioridade(Model.Prioridade)">@Model.Prioridade.Texto()</span>
+        <span class="badge bg-light text-dark border">@(Model.Categoria?.Nome ?? "Sem categoria")</span>
+    </div>
+    <div class="d-flex gap-2">
+        @if (ehEquipe)
+        {
+            <a asp-action="Atender" asp-route-id="@Model.Id" class="btn btn-sm btn-primary">Atender</a>
+            @if (Model.TecnicoId == null)
+            {
+                <form asp-action="Assumir" asp-route-id="@Model.Id" method="post" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <button class="btn btn-sm btn-outline-primary">Assumir</button>
+                </form>
+            }
+        }
+        @if (Model.EstaEncerrado)
+        {
+            <form asp-action="Reabrir" asp-route-id="@Model.Id" method="post" class="m-0">
+                @Html.AntiForgeryToken()
+                <button class="btn btn-sm btn-outline-warning">Reabrir</button>
+            </form>
+        }
+        @if (ehAdmin)
+        {
+            <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="m-0">
+                @Html.AntiForgeryToken()
+                <button class="btn btn-sm btn-outline-danger">Excluir</button>
+            </form>
+        }
+        <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Voltar</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white fw-semibold">Descrição</div>
+            <div class="card-body">
+                <p class="mb-0" style="white-space: pre-wrap;">@Model.Descricao</p>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.Solucao))
+        {
+            <div class="card border-0 shadow-sm mb-3 border-start border-success border-4">
+                <div class="card-header bg-white fw-semibold text-success">Solução aplicada</div>
+                <div class="card-body">
+                    <p class="mb-0" style="white-space: pre-wrap;">@Model.Solucao</p>
+                </div>
+            </div>
+        }
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">
+                Histórico (@Model.Comentarios.Count(c => ehEquipe || !c.Interno))
+            </div>
+            <ul class="list-group list-group-flush">
+            @{
+                var comentarios = Model.Comentarios
+                    .Where(c => ehEquipe || !c.Interno)
+                    .OrderBy(c => c.CriadoEm)
+                    .ToList();
+            }
+            @if (!comentarios.Any())
+            {
+                <li class="list-group-item text-muted small">Nenhum comentário ainda.</li>
+            }
+            @foreach (var comentario in comentarios)
+            {
+                <li class="list-group-item @(comentario.Interno ? "bg-warning-subtle" : "")">
+                    <div class="d-flex justify-content-between">
+                        <strong class="small">@(comentario.Autor?.Nome ?? "Usuário")</strong>
+                        <span class="text-muted small">@comentario.CriadoEm.ToString("dd/MM/yyyy HH:mm")</span>
+                    </div>
+                    @if (comentario.Interno)
+                    {
+                        <span class="badge bg-warning text-dark mb-1">nota interna</span>
+                    }
+                    <div style="white-space: pre-wrap;">@comentario.Texto</div>
+                </li>
+            }
+            </ul>
+            <div class="card-body border-top">
+                <form asp-action="Comentar" asp-route-id="@Model.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-2">
+                        <textarea name="texto" class="form-control" rows="3"
+                                  placeholder="Escreva uma atualização..."></textarea>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        @if (ehEquipe)
+                        {
+                            <div class="form-check">
+                                <input type="checkbox" name="interno" value="true" class="form-check-input" id="interno" />
+                                <label class="form-check-label small" for="interno">Nota interna (não visível ao solicitante)</label>
+                            </div>
+                        }
+                        else
+                        {
+                            <span></span>
+                        }
+                        <button type="submit" class="btn btn-sm btn-primary">Comentar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-semibold">Informações</div>
+            <ul class="list-group list-group-flush small">
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Solicitante</span>
+                    <strong>@(Model.Solicitante?.Nome ?? "-")</strong>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Setor</span>
+                    <strong>@(Model.Solicitante?.Setor ?? "-")</strong>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Técnico</span>
+                    <strong>@(Model.Tecnico?.Nome ?? "não atribuído")</strong>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Aberto em</span>
+                    <strong>@Model.DataAbertura.ToString("dd/MM/yyyy HH:mm")</strong>
+                </li>
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Atualizado em</span>
+                    <strong>@Model.DataAtualizacao.ToString("dd/MM/yyyy HH:mm")</strong>
+                </li>
+                @if (Model.DataFechamento.HasValue)
+                {
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span class="text-muted">Encerrado em</span>
+                        <strong>@Model.DataFechamento.Value.ToString("dd/MM/yyyy HH:mm")</strong>
+                    </li>
+                }
+                <li class="list-group-item d-flex justify-content-between">
+                    <span class="text-muted">Dias em aberto</span>
+                    <strong>@Model.DiasEmAberto</strong>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

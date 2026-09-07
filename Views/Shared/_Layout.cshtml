@@ -1,0 +1,86 @@
+@using System.Security.Claims
+@{
+    var perfil = User.FindFirstValue(ClaimTypes.Role) ?? "";
+    var ehEquipe = perfil == "Admin" || perfil == "Tecnico";
+    var ehAdmin = perfil == "Admin";
+    var autenticado = User.Identity?.IsAuthenticated == true;
+}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - HelpDesk</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="bg-body-tertiary">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+            <div class="container">
+                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">
+                    &#128736; HelpDesk
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="menu">
+                    @if (autenticado)
+                    {
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Home" asp-action="Index">Painel</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Chamados" asp-action="Index">Chamados</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Chamados" asp-action="Create">Abrir chamado</a>
+                            </li>
+                            @if (ehAdmin)
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Usuarios" asp-action="Index">Usuários</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" asp-controller="Categorias" asp-action="Index">Categorias</a>
+                                </li>
+                            }
+                        </ul>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="text-white-50 small">
+                                @User.Identity!.Name
+                                <span class="badge bg-secondary ms-1">@perfil</span>
+                            </span>
+                            <form asp-controller="Conta" asp-action="Logout" method="post" class="m-0">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-sm btn-outline-light">Sair</button>
+                            </form>
+                        </div>
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container py-4">
+        @if (TempData["Mensagem"] != null)
+        {
+            <div class="alert alert-@(TempData["MensagemTipo"] ?? "success") alert-dismissible fade show" role="alert">
+                @TempData["Mensagem"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @RenderBody()
+    </main>
+
+    <footer class="border-top text-center text-muted py-3 small">
+        HelpDesk &copy; @DateTime.Now.Year — projeto de estudo em ASP.NET Core MVC
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,43 @@
+@model IEnumerable<Categoria>
+@{
+    ViewData["Title"] = "Categorias";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Categorias</h1>
+    <a class="btn btn-primary" asp-action="Create">+ Nova categoria</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Chamados</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var categoria in Model)
+            {
+                <tr>
+                    <td class="fw-semibold">@categoria.Nome</td>
+                    <td class="small text-muted">@(categoria.Descricao ?? "-")</td>
+                    <td><span class="badge bg-secondary rounded-pill">@categoria.Chamados.Count</span></td>
+                    <td class="text-end">
+                        <div class="d-inline-flex gap-2">
+                            <a asp-action="Edit" asp-route-id="@categoria.Id" class="btn btn-sm btn-outline-secondary">Editar</a>
+                            <form asp-action="Delete" asp-route-id="@categoria.Id" method="post" class="m-0">
+                                @Html.AntiForgeryToken()
+                                <button class="btn btn-sm btn-outline-danger">Excluir</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

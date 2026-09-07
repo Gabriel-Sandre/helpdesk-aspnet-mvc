@@ -1,0 +1,13 @@
+@model UsuarioFormViewModel
+@{
+    ViewData["Title"] = "Novo usuário";
+}
+<h1 class="h3 mb-3">Novo usuário</h1>
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <partial name="_Form" model="Model" />
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

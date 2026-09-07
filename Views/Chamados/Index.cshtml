@@ -1,0 +1,118 @@
+@model ChamadoFiltroViewModel
+@{
+    ViewData["Title"] = "Chamados";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Chamados <span class="text-muted fs-6">(@Model.TotalRegistros)</span></h1>
+    <a class="btn btn-primary" asp-action="Create">+ Abrir chamado</a>
+</div>
+
+<form method="get" class="card border-0 shadow-sm mb-3">
+    <div class="card-body row g-2 align-items-end">
+        <div class="col-md-4">
+            <label asp-for="Busca" class="form-label small mb-1"></label>
+            <input asp-for="Busca" class="form-control form-control-sm" placeholder="título ou descrição" />
+        </div>
+        <div class="col-md-2">
+            <label asp-for="Status" class="form-label small mb-1"></label>
+            <select asp-for="Status" class="form-select form-select-sm"
+                    asp-items="Html.GetEnumSelectList<StatusChamado>()">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label asp-for="Prioridade" class="form-label small mb-1"></label>
+            <select asp-for="Prioridade" class="form-select form-select-sm"
+                    asp-items="Html.GetEnumSelectList<Prioridade>()">
+                <option value="">Todas</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label asp-for="CategoriaId" class="form-label small mb-1"></label>
+            <select asp-for="CategoriaId" class="form-select form-select-sm" asp-items="Model.Categorias">
+                <option value="">Todas</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-sm btn-dark w-100">Filtrar</button>
+            <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Limpar</a>
+        </div>
+        @if (User.IsInRole("Admin") || User.IsInRole("Tecnico"))
+        {
+            <div class="col-12">
+                <div class="form-check">
+                    <input asp-for="SomenteMeus" class="form-check-input" />
+                    <label asp-for="SomenteMeus" class="form-check-label small">Somente chamados atribuídos a mim</label>
+                </div>
+            </div>
+        }
+    </div>
+</form>
+
+<div class="card border-0 shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>#</th>
+                    <th>Título</th>
+                    <th>Categoria</th>
+                    <th>Solicitante</th>
+                    <th>Técnico</th>
+                    <th>Prioridade</th>
+                    <th>Status</th>
+                    <th>Aberto em</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (!Model.Chamados.Any())
+            {
+                <tr><td colspan="9" class="text-center text-muted py-4">Nenhum chamado encontrado com esses filtros.</td></tr>
+            }
+            @foreach (var chamado in Model.Chamados)
+            {
+                <tr>
+                    <td class="text-muted">@chamado.Id</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@chamado.Id" class="text-decoration-none fw-semibold">
+                            @chamado.Titulo
+                        </a>
+                    </td>
+                    <td class="small">@(chamado.Categoria?.Nome ?? "-")</td>
+                    <td class="small">@(chamado.Solicitante?.Nome ?? "-")</td>
+                    <td class="small">@(chamado.Tecnico?.Nome ?? "<sem técnico>")</td>
+                    <td><span class="badge bg-@UiHelper.CorPrioridade(chamado.Prioridade)">@chamado.Prioridade.Texto()</span></td>
+                    <td><span class="badge bg-@UiHelper.CorStatus(chamado.Status)">@chamado.Status.Texto()</span></td>
+                    <td class="small text-muted">@chamado.DataAbertura.ToString("dd/MM/yyyy")</td>
+                    <td class="text-end">
+                        <a asp-action="Details" asp-route-id="@chamado.Id" class="btn btn-sm btn-outline-secondary">Ver</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (Model.TotalPaginas > 1)
+{
+    <nav class="mt-3">
+        <ul class="pagination pagination-sm justify-content-center">
+            @for (int i = 1; i <= Model.TotalPaginas; i++)
+            {
+                <li class="page-item @(i == Model.Pagina ? "active" : "")">
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-Pagina="@i"
+                       asp-route-Busca="@Model.Busca"
+                       asp-route-Status="@Model.Status"
+                       asp-route-Prioridade="@Model.Prioridade"
+                       asp-route-CategoriaId="@Model.CategoriaId"
+                       asp-route-SomenteMeus="@Model.SomenteMeus">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

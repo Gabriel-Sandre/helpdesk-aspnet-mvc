@@ -1,0 +1,53 @@
+@model AtenderChamadoViewModel
+@{
+    ViewData["Title"] = "Atender chamado";
+    var chamado = ViewBag.Chamado as Chamado;
+}
+
+<h1 class="h3 mb-1">Atender chamado #@Model.ChamadoId</h1>
+<p class="text-muted">@chamado?.Titulo</p>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form asp-action="Atender" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="ChamadoId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label asp-for="Status" class="form-label"></label>
+                    <select asp-for="Status" class="form-select"
+                            asp-items="Html.GetEnumSelectList<StatusChamado>()"></select>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Prioridade" class="form-label"></label>
+                    <select asp-for="Prioridade" class="form-select"
+                            asp-items="Html.GetEnumSelectList<Prioridade>()"></select>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="TecnicoId" class="form-label"></label>
+                    <select asp-for="TecnicoId" class="form-select" asp-items="Model.Tecnicos">
+                        <option value="">Não atribuído</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Solucao" class="form-label"></label>
+                <textarea asp-for="Solucao" class="form-control" rows="5"
+                          placeholder="Obrigatório ao marcar como Resolvido ou Fechado."></textarea>
+                <span asp-validation-for="Solucao" class="text-danger small"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <a asp-action="Details" asp-route-id="@Model.ChamadoId" class="btn btn-outline-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

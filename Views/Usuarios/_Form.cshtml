@@ -1,0 +1,45 @@
+@model UsuarioFormViewModel
+<form method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <label asp-for="Nome" class="form-label"></label>
+            <input asp-for="Nome" class="form-control" />
+            <span asp-validation-for="Nome" class="text-danger small"></span>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="Email" class="form-label"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger small"></span>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-3">
+        <div class="col-md-4">
+            <label asp-for="Perfil" class="form-label"></label>
+            <select asp-for="Perfil" class="form-select" asp-items="Html.GetEnumSelectList<PerfilUsuario>()"></select>
+        </div>
+        <div class="col-md-4">
+            <label asp-for="Setor" class="form-label"></label>
+            <input asp-for="Setor" class="form-control" />
+        </div>
+        <div class="col-md-4">
+            <label asp-for="Senha" class="form-label"></label>
+            <input asp-for="Senha" class="form-control" placeholder="@(Model.Id > 0 ? "deixe em branco para manter" : "senha inicial")" />
+            <span asp-validation-for="Senha" class="text-danger small"></span>
+        </div>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="Ativo" class="form-check-input" />
+        <label asp-for="Ativo" class="form-check-label"></label>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+</form>

@@ -1,0 +1,102 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Painel";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Painel de chamados</h1>
+        <p class="text-muted mb-0">Visão geral do atendimento</p>
+    </div>
+    <a class="btn btn-primary" asp-controller="Chamados" asp-action="Create">+ Abrir chamado</a>
+</div>
+
+<div class="row g-3 mb-4">
+    @{
+        var cards = new (string Titulo, int Valor, string Cor)[]
+        {
+            ("Total", Model.TotalChamados, "dark"),
+            ("Abertos", Model.Abertos, "primary"),
+            ("Em andamento", Model.EmAndamento, "info"),
+            ("Resolvidos", Model.Resolvidos, "success"),
+            ("Sem técnico", Model.SemTecnico, "warning")
+        };
+    }
+    @foreach (var card in cards)
+    {
+        <div class="col-6 col-md-4 col-lg">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-uppercase text-muted small">@card.Titulo</div>
+                    <div class="display-6 fw-bold text-@card.Cor">@card.Valor</div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white fw-semibold">Últimos chamados</div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Título</th>
+                            <th>Status</th>
+                            <th>Prioridade</th>
+                            <th>Aberto em</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @if (!Model.UltimosChamados.Any())
+                    {
+                        <tr><td colspan="5" class="text-center text-muted py-4">Nenhum chamado registrado.</td></tr>
+                    }
+                    @foreach (var chamado in Model.UltimosChamados)
+                    {
+                        <tr>
+                            <td class="text-muted">@chamado.Id</td>
+                            <td>
+                                <a asp-controller="Chamados" asp-action="Details" asp-route-id="@chamado.Id"
+                                   class="text-decoration-none">@chamado.Titulo</a>
+                            </td>
+                            <td><span class="badge bg-@UiHelper.CorStatus(chamado.Status)">@chamado.Status.Texto()</span></td>
+                            <td><span class="badge bg-@UiHelper.CorPrioridade(chamado.Prioridade)">@chamado.Prioridade.Texto()</span></td>
+                            <td class="small text-muted">@chamado.DataAbertura.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white fw-semibold">Por categoria</div>
+            <ul class="list-group list-group-flush">
+            @if (!Model.PorCategoria.Any())
+            {
+                <li class="list-group-item text-muted small">Sem dados.</li>
+            }
+            @foreach (var item in Model.PorCategoria)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    @item.Key
+                    <span class="badge bg-secondary rounded-pill">@item.Value</span>
+                </li>
+            }
+            </ul>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="text-uppercase text-muted small">Tempo médio de resolução</div>
+                <div class="h4 mb-0">@Model.MediaDiasResolucao.ToString("0.0") dias</div>
+            </div>
+        </div>
+    </div>
+</div>

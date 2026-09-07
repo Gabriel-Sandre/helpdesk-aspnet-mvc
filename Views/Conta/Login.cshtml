@@ -1,0 +1,54 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Entrar";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Entrar - HelpDesk</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+</head>
+<body class="bg-dark">
+    <div class="container" style="max-width: 420px; margin-top: 8vh;">
+        <div class="card shadow-lg border-0">
+            <div class="card-body p-4">
+                <h1 class="h4 text-center mb-1">&#128736; HelpDesk</h1>
+                <p class="text-center text-muted small mb-4">Sistema de gestão de chamados</p>
+
+                <form asp-action="Login" method="post">
+                    <input type="hidden" asp-for="ReturnUrl" />
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small d-none-if-empty"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" autofocus placeholder="seu@email.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Senha" class="form-label"></label>
+                        <input asp-for="Senha" class="form-control" placeholder="••••••" />
+                        <span asp-validation-for="Senha" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                </form>
+
+                <hr class="my-4" />
+                <p class="small text-muted mb-1"><strong>Contas de teste:</strong></p>
+                <ul class="small text-muted mb-0 ps-3">
+                    <li>admin@helpdesk.local / admin123</li>
+                    <li>tecnico@helpdesk.local / tecnico123</li>
+                    <li>usuario@helpdesk.local / usuario123</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

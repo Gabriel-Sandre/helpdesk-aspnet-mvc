@@ -1,0 +1,11 @@
+@model Categoria
+@{
+    ViewData["Title"] = "Nova categoria";
+}
+<h1 class="h3 mb-3">Nova categoria</h1>
+<div class="card border-0 shadow-sm">
+    <div class="card-body"><partial name="_Form" model="Model" /></div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
