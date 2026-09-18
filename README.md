@@ -1,5 +1,9 @@
 # HelpDesk — Sistema de Chamados
 
+[![CI](https://github.com/Gabriel-Sandre/helpdesk-aspnet-mvc/actions/workflows/ci.yml/badge.svg)](https://github.com/Gabriel-Sandre/helpdesk-aspnet-mvc/actions/workflows/ci.yml)
+[![.NET](https://img.shields.io/badge/.NET-10-512BD4)](https://dotnet.microsoft.com/)
+[![Licença](https://img.shields.io/badge/licen%C3%A7a-MIT-blue)](LICENSE)
+
 Sistema web de abertura e acompanhamento de chamados de suporte técnico, feito em
 **ASP.NET Core 10 MVC** com **Entity Framework Core**, rodando em **SQLite** ou
 **SQL Server** conforme a configuração.
@@ -116,3 +120,14 @@ Views/          Telas Razor + layout com Bootstrap 5
 - Para zerar os dados de teste: no SQLite, apague o arquivo `helpdesk.db`; no SQL
   Server, exclua o banco `HelpDesk` pelo SSMS. Em ambos os casos ele é recriado na
   próxima execução.
+
+## Melhorias futuras
+
+Sei o que falta neste projeto, e é o que eu faria em seguida:
+
+- **Testes automatizados** (xunit) para as regras do chamado: atribuição, mudança de status,
+  reabertura e visibilidade da nota interna. Hoje o projeto não tem nenhum.
+- **Migrations** no lugar de `EnsureCreated()`, para evoluir o banco sem recriá-lo.
+- **Paginação e filtros no servidor** também na tela de usuários e categorias.
+- **Anexos nos chamados** (print do erro é o que todo suporte pede primeiro).
+- **Notificação por e-mail** quando o chamado muda de status.
