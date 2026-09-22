@@ -5,6 +5,9 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>HelpDesk</RootNamespace>
+    <!-- O projeto de testes fica em tests/, dentro desta pasta. Sem esta linha,
+         o SDK tentaria compilar os arquivos de teste junto com a aplicacao. -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);tests/**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
