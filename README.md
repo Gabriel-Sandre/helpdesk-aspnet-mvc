@@ -92,6 +92,23 @@ Ao subir, o terminal registra qual provedor está em uso.
 - CRUD de usuários e de categorias (restrito ao administrador)
 - Proteção contra CSRF em todos os formulários (antiforgery token)
 
+## Testes
+
+O projeto de testes fica em `tests/HelpDesk.Tests` e usa **xUnit**:
+
+- **Unitários** — `SenhaHasher`: formato `iterações.salt.hash` (≥ 100.000 iterações),
+  salt diferente a cada geração, recusa de senha vazia e verificação da senha.
+- **Integração** — a aplicação real sobe em memória com `WebApplicationFactory` e um
+  SQLite em memória, isolado do banco de desenvolvimento. Os testes conferem o controle
+  de acesso: o solicitante vê o próprio chamado, outro usuário é redirecionado para
+  "acesso negado" e quem não fez login vai para a tela de login.
+
+```bash
+dotnet test
+```
+
+O GitHub Actions compila e roda os testes a cada push e pull request.
+
 ## Estrutura do projeto
 
 ```
@@ -102,6 +119,7 @@ Data/           AppDbContext (mapeamento EF Core) e DbInitializer (seed)
 Services/       SenhaHasher (hash e verificação de senha)
 Helpers/        UiHelper (cores dos badges e texto amigável dos enums)
 Views/          Telas Razor + layout com Bootstrap 5
+tests/          Testes unitários e de integração (xUnit)
 ```
 
 ## Modelo de dados
@@ -125,8 +143,9 @@ Views/          Telas Razor + layout com Bootstrap 5
 
 Sei o que falta neste projeto, e é o que eu faria em seguida:
 
-- **Testes automatizados** (xunit) para as regras do chamado: atribuição, mudança de status,
-  reabertura e visibilidade da nota interna. Hoje o projeto não tem nenhum.
+- **Mais testes** para as regras do chamado: atribuição, mudança de status,
+  reabertura e visibilidade da nota interna (hoje os testes cobrem o hash de senha
+  e o controle de acesso aos chamados).
 - **Migrations** no lugar de `EnsureCreated()`, para evoluir o banco sem recriá-lo.
 - **Paginação e filtros no servidor** também na tela de usuários e categorias.
 - **Anexos nos chamados** (print do erro é o que todo suporte pede primeiro).
